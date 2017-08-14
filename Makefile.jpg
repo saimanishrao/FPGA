@@ -1,0 +1,69 @@
+LABNAME = Design and analysis of single cycle, multi-cyle and pipelined multiplier circuits.
+SHORTNAME = Mult
+SMOKENAME = Mult
+
+## Default simulator is iverilog
+VSIM = -vsim iverilog
+
+.PHONY: help
+help:
+	@echo "Lab: $(LABNAME)"
+	@echo "Useful targets:"
+	@echo "single -- Builds the single cycle circuit."
+	@echo "multi -- Builds the multi cycle circuit."
+	@echo "pipe -- Builds the pipelined circuit."
+	@echo "  clean          --  remove intermediate files"
+	@echo "  help           --  display this message"
+
+#.PHONY: single
+single: braminter.bsv bram.bsv bramtest.bsv
+	@echo "Compiling into verilog files"
+	bsc -u -verilog bramtest.bsv
+	@echo "Generting the simulation object"
+	bsc -verilog -e sysBRAMTest -o sim sysBRAMTest.v  mkBram.v get_rint.ba get_rint.c
+
+msingle: Mshifterinterface.bsv Mshifter.bsv Mshiftertb.bsv
+	@echo "Compiling into verilog files"
+	bsc -verilog -u Mshiftertb.bsv
+	@echo "Generting the simulation object"
+	bsc -verilog -e  mkMshiftertblfsr -o Mshiftertb.bsim
+psingle: Pshifterinterface.bsv Pshifter.bsv Pshiftertb.bsv
+	@echo "Compiling into verilog files"
+	bsc -verilog -u Pshiftertb.bsv
+	@echo "Generting the simulation object"
+	bsc -verilog -e  mkPipeTbLFSR -o Pshiftertb.bsim
+
+
+singlelfsr: SingleMultiplier.bsv Single.bsv SingleTbLFSR.bsv
+	@echo "Compiling into verilog files"
+	bsc -verilog -u SingleTbLFSR.bsv
+	@echo "Generting the simulation object"
+	bsc -verilog -e  mkSingleTbLFSR -o SingleTbLFSR.bsim
+
+multi: Multiplier.bsv Multi.bsv MultiTb.bsv
+	@echo "Compiling into verilog files"
+	bsc -verilog -u MultiTb.bsv
+	@echo "Generting the simulation object"
+	bsc -verilog -e mkMultiTb -o MultiTb.bsim
+
+multiLFSR: Multiplier.bsv Multi.bsv MultiTbLFSR.bsv
+	@echo "Compiling into verilog files"
+	bsc -verilog -u MultiTbLFSR.bsv
+	@echo "Generting the simulation object"
+	bsc -verilog -e mkMultiTbLFSR -o MultiTb.bsim
+
+temp: temp.bsv tempifc.bsv temptb.bsv
+	@echo "Compiling into verilog files"
+	bsc -verilog -u temptb.bsv
+	@echo "Generting the simulation object"
+	bsc -verilog -e  mkTemplfsr -o temptb.bsim
+
+pipelfsr: PipeMultiplier.bsv Pipe.bsv PipeTbLFSR.bsv
+	@echo "Compiling into verilog files"
+	bsc -verilog -u PipeTbLFSR.bsv
+	@echo "Generting the simulation object"
+	bsc -verilog -e  mkPipeTbLFSR -o PipeTbLFSR.bsim
+
+.PHONY: clean
+clean:
+	@rm -f *.bi *.bo *.ba mk*.c mk*.h mk*.o mk*.v *_c *_v *.vcd *~ *.fsdb *.log *.bsim

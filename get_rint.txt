@@ -1,0 +1,6 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include<math.h>
+unsigned long long get_rint (unsigned long long int data) {
+	return round(0.5*data);
+}
